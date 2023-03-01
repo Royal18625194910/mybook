@@ -5,6 +5,7 @@ import {
   LockOutlined,
   MailOutlined,
 } from '@ant-design/icons-vue';
+import {auth} from '@/service'
 
 export default defineComponent({
   components: {
@@ -17,19 +18,25 @@ export default defineComponent({
       loginForm: {
         account: '12333',
         password: '666'
-      },
-      regForm: {
-        account: '12333',
-        password: '666',
-        inviteCode: 233
       }
+    })
+
+    const regForm = reactive({
+      account:'',
+      password: '',
     })
 
     const forgetPassword = () => {}
     const login = () => {}
-    const register = () => {}
+    const register = () => {
+      // console.log(regForm);
+      auth.register(regForm).then(res => {
+        console.log(res);
+      })
+    }
     return {
       ...toRefs(data),
+      regForm,
       forgetPassword,
       login,
       register

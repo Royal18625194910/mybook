@@ -1,25 +1,13 @@
 const mongoose = require('mongoose')
-
-// UserSchema
-const UserSchema = new mongoose.Schema({
-  nickname: String,
-  password: String,
-  age: Number
-})
-
-const UserModel = mongoose.model('User', UserSchema)
-
+require('./Schemas/User.js')  // UserSchema创建的model
 const connect = () => {
-  mongoose.connect('mongodb://localhost:27017/mybook-data')
-  mongoose.connection.on('open', () =>{
-    console.log('链接成功');
-    const user = new UserModel({
-      nickname: 'John',
-      password: '123',
-      age: 18
+  return new Promise((resolve) => {
+    mongoose.connect('mongodb://localhost:27017/mybook-data')
+    mongoose.connection.on('open', () =>{
+      console.log('链接成功');
+      resolve()
     })
-    user.save()
   })
 }
 
-connect()
+module.exports = { connect }

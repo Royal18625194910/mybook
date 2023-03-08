@@ -1,4 +1,4 @@
-import { reactive,toRefs } from "vue"
+import { reactive } from "vue"
 import { defineComponent } from 'vue';
 import {
   UserOutlined,
@@ -6,6 +6,9 @@ import {
   MailOutlined,
 } from '@ant-design/icons-vue';
 import {auth} from '@/service'
+import { message } from 'ant-design-vue';
+import { result } from '@/utils/result';
+
 
 export default defineComponent({
   components: {
@@ -14,29 +17,47 @@ export default defineComponent({
     MailOutlined,
   },
   setup() {
-    const data = reactive({
-      loginForm: {
-        account: '12333',
-        password: '666'
-      }
+
+    // 注册表单数据
+    const regForm = reactive({
+      account:'',
+      password: '',
+      inviteCode: ''
     })
 
-    const regForm = reactive({
+     // 登录表单数据
+     const loginForm = reactive({
       account:'',
       password: '',
     })
 
     const forgetPassword = () => {}
-    const login = () => {}
-    const register = () => {
-      // console.log(regForm);
-      auth.register(regForm).then(res => {
-        console.log(res);
+    // 点击登录
+    const login = async () => {
+      // 若未填写用户密码，则提示弹窗
+      if ( !loginForm.account || !loginForm.password ) return message.warn('请填写用户名或密码');
+      
+      const res = await auth.login(loginForm)
+      // 判断登录是否成功
+      result(res)
+      .success((data) => {
+        message.success(data.msg)
       })
     }
+    // 点击注册
+    const register = async () => {
+      if ( !regForm.account || !regForm.password ) return message.warn('请填写用户名或密码');
+      if ( !regForm.inviteCode ) return message.warn('请填写邀请码');
+      const res = await auth.register(regForm)
+       // 判断登录是否成功
+       result(res)
+       .success((data) => {
+         message.success(data.msg)
+       })
+    }
     return {
-      ...toRefs(data),
       regForm,
+      loginForm,
       forgetPassword,
       login,
       register

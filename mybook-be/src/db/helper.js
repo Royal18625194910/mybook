@@ -13,6 +13,12 @@ const getMeta = () => ({
   },
 })
 
+/**
+ * 获取ctx.request.body
+ */
+const getBody = (ctx) =>  ctx.request.body || {}
+
 module.exports = {
-  getMeta
+  getMeta,
+  getBody
 }

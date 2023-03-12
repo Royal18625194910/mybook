@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { getMeta } = require('../helper.js')
+const { getMeta,preSave } = require('../helper.js')
 
 // UserSchema 用户Schema
 const BookSchema = new mongoose.Schema({
@@ -18,5 +18,6 @@ const BookSchema = new mongoose.Schema({
   meta:getMeta()
 })
 
+BookSchema.pre('save',preSave)
 // model
 mongoose.model('Book', BookSchema)

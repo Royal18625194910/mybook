@@ -1,5 +1,5 @@
 const mongoose = require('mongoose')
-const { getMeta } = require('../helper.js')
+const { getMeta,preSave } = require('../helper.js')
 
 // UserSchema 用户Schema
 const InviteCodeSchema = new mongoose.Schema({
@@ -10,5 +10,6 @@ const InviteCodeSchema = new mongoose.Schema({
   meta:getMeta()
 })
 
+InviteCodeSchema.pre('save',preSave)
 // model
 mongoose.model('InviteCode', InviteCodeSchema)

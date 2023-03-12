@@ -37,7 +37,10 @@
             </template>
             <!-- 操作 -->
             <template v-if="column.dataIndex === 'actions'">
+              <a href="javascript:;" @click="toDetail(record)">详情</a>
+              <span>&nbsp;&nbsp;&nbsp;</span>
               <a href="javascript:;" @click="update(record)">编辑</a>
+              <span>&nbsp;&nbsp;&nbsp;</span>
               <a href="javascript:;" @click="remove(record)">删除</a>
             </template>
             <!-- 出库入库 -->
@@ -51,8 +54,8 @@
       </div>
     </a-card>
     <!-- 添加图书组件 -->
-    <AddOne :show="show" v-model:show="show"/>
-    <Update :show="show" v-model:show="show" :book="curEditBook" v-model:book="curEditBook"/>
+    <AddOne :show="show" v-model:show="show" @getList="getList"/>
+    <Update :show="updateShow" v-model:show="updateShow" :book="curEditBook" @update="updateCurBook"/>
   </div>
 </template>
 
@@ -64,6 +67,7 @@ import {book} from '@/service'
 import { result } from '@/utils/result.js'
 import { formatTimestamp } from '@/utils/formatTimestamp.js'
 import { message,Modal  } from 'ant-design-vue'
+import { useRouter } from 'vue-router'
 
 export default defineComponent({
   components: {
@@ -71,6 +75,7 @@ export default defineComponent({
     Update
   },
   setup () {
+    const router = useRouter()
     // 表格列名
     const columns = [
       {
@@ -105,6 +110,7 @@ export default defineComponent({
     // 表格数据
     const list = ref([]);
     const show = ref(false)
+    const updateShow = ref(false)
     const title = ref('')
     const total = ref(0)   // 总数据
     const currentPage = ref(1)  // 当前页码
@@ -192,8 +198,18 @@ export default defineComponent({
     // 编辑
     const update = (record) => {
       record.publishDate = Date.parse(record.publishDate)
-      show.value = true
+      updateShow.value = true
       curEditBook.value = record
+    }
+
+    // 书籍详情页
+    const toDetail = (record) => {
+      router.push(`/books/${record._id}`)
+    }
+
+    const updateCurBook = (data) => {
+      Object.assign(curEditBook,data)
+      getList()
     }
 
       return {
@@ -202,6 +218,7 @@ export default defineComponent({
         list,
         add,
         show,
+        updateShow,
         formatTimestamp,
         onMounted,
         pagination,
@@ -211,7 +228,10 @@ export default defineComponent({
         remove,
         updateCount,
         update,
-        curEditBook
+        curEditBook,
+        updateCurBook,
+        toDetail,
+        getList
       }
     }
   })

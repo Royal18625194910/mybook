@@ -66,9 +66,10 @@ export default defineComponent({
       result(res)
       .success((data) => {
         message.success(data.msg)
+        context.emit('getList')
       })
       formRef.value.resetFields()
-      
+      close()
     }
 
     // 点击关闭

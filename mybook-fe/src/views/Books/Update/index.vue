@@ -57,22 +57,25 @@ export default defineComponent({
     // 侦听书籍信息变化
     watch(()=>props.book,(current) => {
       Object.assign(editForm,current)
-      editForm.publishDate = (Number(editForm.publishDate))
-      console.log('editForm',editForm);
+      editForm.publishDate = moment(Date.parse(editForm.publishDate))
     })
 
     // 点击提交按钮保存编辑好的书籍信息
     const submit = async () => {
       const res = await book.update({
         id: props.book._id,
-        ...editForm
+        name: editForm.name,// 书名
+        price: editForm.price,// 价格
+        author: editForm.author,// 作者
+        classify: editForm.classify,// 分类 
+        publishDate: editForm.publishDate.valueOf()
       })
       
       result(res)
-      .success(({data}) => {
-        context.emit('update:book',data)
-        console.log(data);
-        message.success(data.msg)
+      .success(({data,msg}) => {
+        context.emit('update',data)
+        message.success(msg)
+        close()
       })
     }
 

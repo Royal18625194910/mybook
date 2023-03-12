@@ -18,8 +18,19 @@ const router = createRouter({
           name: 'Books',
           component: () => import('../views/Books/index.vue')
         },
+        {
+          path: 'books/:id',
+          name: 'BookDetail',
+          component: () => import('../views/BookDetail/index.vue')
+        },
+        {
+          path: 'users',
+          name: 'Users',
+          component: () => import('../views/Users/index.vue')
+        }
       ]
-    }
+    },
+    
   ]
 })
 

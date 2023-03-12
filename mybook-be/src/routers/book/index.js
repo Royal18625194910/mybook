@@ -8,6 +8,7 @@ const BOOK_CONST = {
 }
 
 const Book = mongoose.model('Book')
+const InventoryLog = mongoose.model('InventoryLog')
 
 const router = new Router({
   prefix: '/book'
@@ -42,6 +43,9 @@ router.get('/list', async ctx => {
   // 执行查询语句
   const list = await Book
   .find(query)
+  .sort({
+    _id: -1
+  })
   .skip((page - 1) * size)
   .limit(size)
   .exec()
@@ -74,6 +78,7 @@ router.delete('/:id', async ctx => {
 router.post('/update/count', async ctx => {
   let { id, num , type } = getBody(ctx);
   num = Number(num)
+  type = Number(type)
   const book = await Book.findOne({_id: id}).exec()
   // 若没有相关书籍
   if ( !book ) {
@@ -95,6 +100,12 @@ router.post('/update/count', async ctx => {
     return
   }
   const res = await book.save()
+  // 保存日志数据
+  const log = new InventoryLog({
+    num: Math.abs(num),
+    type
+  })
+  await log.save()
   ctx.body = {
     data: res,
     code: 1,
@@ -131,6 +142,26 @@ router.post('/update', async ctx => {
       data: res,
       msg: '保存成功'
     }
+  }
+})
+
+// 获取书籍详情
+router.get('/detail/:id', async ctx => {
+  const { id } = ctx.params
+  const one = await Book.findOne({_id: id}).exec()
+  // 若没有找到书籍
+  if ( !one ) {
+    ctx.body = {
+      code: 0,
+      data: null,
+      msg: '未找到该书籍'
+    }
+    return
+  }
+  ctx.body = {
+    code: 1,
+    data: one,
+    msg: '成功找到该书籍'
   }
 })
 

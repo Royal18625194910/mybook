@@ -15,6 +15,18 @@
         <a-form-item label="密码" name="password">
           <a-input-password v-model:value="addForm.password" />
         </a-form-item>
+        <!-- 角色列表 -->
+        <a-form-item label="角色" name="character">
+          <a-select
+          ref="select"
+          v-model:value="addForm.character"
+          style="width: 120px"
+        >
+          <a-select-option :value="item._id" v-for="item in characterInfo" :key="item._id">
+            {{item.title}}
+          </a-select-option>
+        </a-select>
+        </a-form-item>
       </a-form>
     </a-modal>
   </div>
@@ -24,7 +36,8 @@
 import { defineComponent,reactive,ref } from 'vue'
 import {user} from '@/service'
 import { result } from '@/utils/result.js'
-import { message } from 'ant-design-vue';
+import { message } from 'ant-design-vue'
+import store from '@/store'
 export default defineComponent({
   props: {
     show:Boolean
@@ -35,7 +48,12 @@ export default defineComponent({
     const addForm = reactive({
       account: '',// 用户
       password: '',// 密码
+      character: '',  // 角色列表
     })
+
+    // 默认选中成员
+    const { characterInfo } = store.state
+    addForm.character = characterInfo[1]._id
 
     // 点击提交
     const submit = async () => {
@@ -61,6 +79,7 @@ export default defineComponent({
       submit,
       props,
       close,
+      characterInfo,
     }
   }
 })

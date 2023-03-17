@@ -11,7 +11,6 @@
             @search="onSearch"
             enter-button
           />
-          <a href="javascript:;">返回</a>
         </div>
 
         <div>
@@ -37,9 +36,18 @@
         @change="setPage"
         >
           <template #bodyCell="{ record,  column}">
+            <!-- 创建时间 -->
             <template v-if="column.dataIndex === 'createAt'">
               {{ formatTimestamp(record.meta.createAt) }}
             </template>
+            <!-- 角色 -->
+            <template v-if="column.dataIndex === 'character'">
+              <a href="javascript:;" @click="onEdit(record)">
+                <EditOutlined />
+              </a>
+              {{ getCharacterInfoById(record.character).title }}
+            </template>
+            <!-- 操作 -->
             <template v-if="column.dataIndex === 'actions'">
               <a href="javascript:;" @click="resetPassword(record)">重置密码</a>
               <span>&nbsp;&nbsp;&nbsp;&nbsp;</span>
@@ -51,28 +59,41 @@
     </a-card>
     <a-modal
       title="修改角色"
+      v-model:visible="showEditCharacterModal"
+      @ok="updateCharacter"
     >
       <a-select
+        v-model:value="editForm.character"
         style="width: 220px;"
       >
+        <a-select-option v-for="item in characterInfo" :key="item._id" :value="item._id">
+          {{ item.title }}
+        </a-select-option>
       </a-select>
     </a-modal>
-    <AddOne v-model:show="showModal"/>
+    <AddOne v-model:show="showModal" @getList="getUser"/>
   </div>
 </template>
 
 <script >
-import { defineComponent,ref,onMounted,computed,watch } from 'vue'
+import { defineComponent,ref,onMounted,computed,watch,reactive } from 'vue'
 import AddOne from './AddOne/index.vue'
 import { user } from '@/service'
 import { result } from '@/utils/result'
 import { message } from 'ant-design-vue'
+import store from '@/store'
+import { EditOutlined } from '@ant-design/icons-vue';
 import { formatTimestamp } from '@/utils/formatTimestamp.js'
+import { getCharacterInfoById } from '@/utils/character'
 
 const columns = [
   {
     title: '账户',
     dataIndex: 'account'
+  },
+  {
+    title: '角色',
+    dataIndex: 'character'
   },
   {
     title: '创建日期',
@@ -86,6 +107,7 @@ const columns = [
 
 export default defineComponent({
   components: {
+    EditOutlined,
     AddOne
   },
   setup () {
@@ -96,6 +118,11 @@ export default defineComponent({
     const currentPage = ref(1)    // 当前页码
     const size = ref(10)   // 每页条数
     const keyword = ref('')  // 搜索关键字
+    const showEditCharacterModal = ref(false) 
+    const editForm = reactive({
+      character: '',
+      current: {}
+    })
 
 
     // 获取用户列表
@@ -106,6 +133,12 @@ export default defineComponent({
         list.value = resList
         total.value = resTotal
       })
+    }
+
+    const onEdit = (record) => {
+      showEditCharacterModal.value = true
+      editForm.current = record
+      editForm.character = record.character
     }
 
     // 点击删除某个用户
@@ -144,6 +177,18 @@ export default defineComponent({
       getUser()
     }
 
+    // 点击ok
+    const updateCharacter = async () => {
+      const res = await user.editCharacter(editForm.character,editForm.current._id)
+
+      result(res)
+      .success(({msg}) => {
+        message.success(msg)
+        showEditCharacterModal.value = false
+        editForm.current.character = editForm.character
+      })
+    }
+
     watch(() => keyword.value, (newValue) => {
       if ( !newValue ) getUser()
     })
@@ -165,7 +210,14 @@ export default defineComponent({
       setPage,
       resetPassword,
       keyword,
-      onSearch
+      onSearch,
+      getCharacterInfoById,
+      getUser,
+      showEditCharacterModal,
+      characterInfo:store.state.characterInfo,
+      editForm,
+      onEdit,
+      updateCharacter
     }
   }
 })

@@ -5,6 +5,7 @@ const { getMeta,preSave } = require('../helper.js')
 const UserSchema = new mongoose.Schema({
   account: String,
   password: String,
+  character: String,  // 权限
   meta:getMeta()
 })
 

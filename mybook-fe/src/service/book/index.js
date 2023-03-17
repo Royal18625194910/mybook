@@ -1,5 +1,7 @@
 import axios from 'axios'
+import { getToken } from '@/utils/token'
 
+axios.defaults.headers['Authorization'] = `Bearer ${getToken()}`
 /**
  * 添加书籍 add
  */

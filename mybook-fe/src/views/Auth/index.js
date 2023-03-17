@@ -7,7 +7,11 @@ import {
 } from '@ant-design/icons-vue';
 import {auth} from '@/service'
 import { message } from 'ant-design-vue';
+import { getCharacterInfoById } from '@/utils/character'
 import { result } from '@/utils/result';
+import store from '@/store';
+import { useRouter } from 'vue-router'
+import { setToken } from '@/utils/token';
 
 
 export default defineComponent({
@@ -18,6 +22,7 @@ export default defineComponent({
   },
   setup() {
 
+    const router = useRouter()
     // 注册表单数据
     const regForm = reactive({
       account:'',
@@ -40,8 +45,17 @@ export default defineComponent({
       const res = await auth.login(loginForm)
       // 判断登录是否成功
       result(res)
-      .success((data) => {
-        message.success(data.msg)
+      .success( async ({msg,data: {user,token}}) => {
+        message.success(msg)
+        setToken(token)
+        // 获取用户的角色信息
+        await store.dispatch('getCharacterInfo');
+        // 改变用户信息
+        store.commit('setUserInfo',user)
+        // 设置用户角色信息
+        store.commit('setUserCharacter',getCharacterInfoById(user.character))
+     
+        router.replace('/books')
       })
     }
     // 点击注册

@@ -132,7 +132,6 @@ export default defineComponent({
       const res = await inventoryLog.list({id,type,page:logCurPage.value,size:pageSize.value})
       result(res)
       .success( ({data: {list,total}}) => {
-        console.log(list);
         log.value = list
         logTotal.value = total
       })
@@ -150,7 +149,6 @@ export default defineComponent({
     }
     // 筛选日志
     const logFilter = (type) => {
-      console.log(type);
       curLogType.value = type
       getInventoryLog(type)
     }

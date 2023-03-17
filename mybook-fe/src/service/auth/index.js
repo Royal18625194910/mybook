@@ -1,4 +1,8 @@
 import axios from 'axios'
+import { getToken } from '@/utils/token'
+
+axios.defaults.headers['Authorization'] = `Bearer ${getToken()}`
+
 
 /**
  * 注册api

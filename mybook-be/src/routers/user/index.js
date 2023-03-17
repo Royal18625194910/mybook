@@ -3,11 +3,13 @@ const Router = require('@koa/router')
 const mongoose = require('mongoose')
 const { getBody } = require('../../db/helper')
 const config = require('../../project.config')
-// InviteCode
+const { verify,getToken } = require('../../db/token')
+// User
 const User = mongoose.model('User')
+const Character = mongoose.model('Character')
 
 const router = new Router({
-  prefix: '/user',
+  prefix: '/user'
 })
 
 /**
@@ -68,11 +70,25 @@ router.delete('/:id', async ctx => {
  * 添加用户
  */
 router.post('/add', async ctx => {
-  const { account , password } = getBody(ctx)
+  const { account , password,character } = getBody(ctx)
+
+  const char = await Character.findOne({
+    _id: character
+  })
+
+  if ( !char ) {
+    ctx.body = {
+      code: 0,
+      msg: '出错啦',
+      data: null
+    }
+    return
+  }
 
   const user = new User({
     account,
-    password: password || '123123'
+    password: password || '123123',
+    character
   })
 
   const res = await user.save()
@@ -110,6 +126,58 @@ router.post('/reset/password', async ctx => {
       account: res.account,
       id: res._id
     }
+  }
+})
+
+/**
+ * 更新用户角色
+ */
+router.post('/update/character', async ctx => {
+  const { character,userId } = getBody(ctx)
+
+  // 查找角色Id是否存在
+  const char = await Character.findOne({ _id: character}).exec()
+
+  if ( !char ) {
+    ctx.body = {
+      code: 0,
+      msg: '出错啦'
+    }
+    return
+  }
+
+  // 修改对应的用户id
+  const user = await User.findOne({ _id: userId}).exec()
+
+  if ( !user ) { 
+    ctx.body = {
+      code: 0,
+      msg: '出错啦'
+    }
+    return
+  }
+
+  user.character = character
+
+  const res = await user.save()
+
+  ctx.body = {
+    code: 1,
+    msg: '修改成功',
+    data: res
+  }
+
+})
+/**
+ * 获取用户token
+ */
+router.get('/info',async ctx => {
+  const token = getToken(ctx)
+  const res = await verify(token) 
+  ctx.body = {
+    code: 1,
+    data:res,
+    msg: '获取成功'
   }
 })
 

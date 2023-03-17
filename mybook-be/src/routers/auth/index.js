@@ -3,6 +3,7 @@ const Router = require('@koa/router')
 const mongoose = require('mongoose')
 const { getBody } = require('../../db/helper.js')
 const jwt = require('jsonwebtoken')
+const config = require('../../project.config')
 
 // UserModel
 const User = mongoose.model('User')
@@ -67,7 +68,6 @@ router.post('/register', async ctx => {
 
 // 登录路由
 router.post('/login', async ctx => {
-  ctx.body = 'login'
   const { account,password } = getBody(ctx)
   // 若未输入，则提示 “未输入用户名或密码”
   if ( !account || !password ) { 
@@ -81,21 +81,21 @@ router.post('/login', async ctx => {
   const one = await User.findOne({account}).exec()
   // 若不存在，则用户密码错误
   if ( !one || one.password !== password) {
-    return ctx.body = {
+     ctx.body = {
       code: 0,
       msg: '用户或密码错误',
       data: null
     }
-    
+    return
   }
 
-  const user = {account,id:one._id}
+  const user = {account,id:one._id,character: one.character}
   return ctx.body = {
     code: 1,
     msg: '登录成功',
     data: {
       user,
-      token: jwt.sign(user,'mybook')
+      token: jwt.sign(user,config.JWT_SECRET),
     }
   }
 })

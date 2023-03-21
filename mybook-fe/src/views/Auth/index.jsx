@@ -5,8 +5,8 @@ import {
   LockOutlined,
   MailOutlined,
 } from '@ant-design/icons-vue';
-import {auth} from '@/service'
-import { message } from 'ant-design-vue';
+import {auth,resetPassword } from '@/service'
+import { message,Modal,Input  } from 'ant-design-vue';
 import { getCharacterInfoById } from '@/utils/character'
 import { result } from '@/utils/result';
 import store from '@/store';
@@ -36,7 +36,25 @@ export default defineComponent({
       password: '',
     })
 
-    const forgetPassword = () => {}
+    const forgetPassword = () => {
+      Modal.confirm({
+        title: '请输入要重置密码的账户',
+        content:(
+          <>
+            <Input class='__forgetPassword_input'></Input>
+          </>
+        ),
+        onOk: async () => {
+          const input = document.querySelector('.__forgetPassword_input')
+          const account = input.value
+          const res = await resetPassword.add(account)
+          result(res)
+          .success(({msg}) => {
+            message.success(msg)
+          })
+        },
+      });
+    }
     // 点击登录
     const login = async () => {
       // 若未填写用户密码，则提示弹窗

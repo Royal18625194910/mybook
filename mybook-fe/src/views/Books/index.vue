@@ -16,7 +16,7 @@
           @search="onSearch"
         />
         &nbsp;
-        <a-button @click="add" type="primary">添加</a-button>
+        <a-button @click="add" type="primary" :loading="bookClassifyLoading">添加</a-button>
       </div>
 
       <a-divider />
@@ -63,7 +63,7 @@
 import { defineComponent,ref,onMounted,computed,watch } from 'vue'
 import AddOne from './AddOne/index.vue'
 import Update from './Update/index.vue'
-import {book} from '@/service'
+import {book,bookClassify} from '@/service'
 import { result } from '@/utils/result.js'
 import { formatTimestamp } from '@/utils/formatTimestamp.js'
 import { message,Modal  } from 'ant-design-vue'
@@ -117,6 +117,8 @@ export default defineComponent({
     const size = ref(5)    // 每页条数
     const keyword = ref('')
     const curEditBook = ref({})
+    const bookClassifyList = ref([])
+    const bookClassifyLoading = ref(false)
     watch(keyword,(newKey) => {
       if( !newKey ) getList()
     })
@@ -142,6 +144,18 @@ export default defineComponent({
       })
     }
 
+    // 获取书籍分类
+    const getbookClassify = async () => {
+      bookClassifyLoading.value = true
+      const res = await bookClassify.list()
+      bookClassifyLoading.value = false
+      console.log(res);
+      result(res)
+      .success(({data}) => {
+        bookClassifyList.value = data
+      })
+    }
+
     // 删除某个书籍
     const remove = async ({_id}) => {
       const res = await book.remove(_id);
@@ -152,6 +166,7 @@ export default defineComponent({
       getList()
     }
     onMounted( async () => {
+      await getbookClassify()
       getList()
     })
     // 点击换页
@@ -207,6 +222,7 @@ export default defineComponent({
       router.push(`/books/${record._id}`)
     }
 
+    // 更新书籍
     const updateCurBook = (data) => {
       Object.assign(curEditBook,data)
       getList()
@@ -231,7 +247,10 @@ export default defineComponent({
         curEditBook,
         updateCurBook,
         toDetail,
-        getList
+        getList,
+        bookClassifyList,
+        getbookClassify,
+        bookClassifyLoading
       }
     }
   })

@@ -12,7 +12,6 @@ const router = createRouter({
     {
       path: '/',
       name: 'BasicLayout',
-      redirect: '/auth',
       component: () => import('../layout/BasicLayout/index.vue'),
       children: [
         {
@@ -34,6 +33,21 @@ const router = createRouter({
           path: 'log',
           name: 'log',
           component: () => import('../views/Log/index.vue')
+        },
+        {
+          path: 'reset/password',
+          name: 'resetPassword',
+          component: () => import('../views/ResetPassword/index.vue')
+        },
+        {
+          path: 'invite',
+          name: 'invite',
+          component: () => import('../views/InviteCode/index.vue')
+        },
+        {
+          path: 'book-classify',
+          name: 'BookClassify',
+          component: () => import('../views/BookClassify/index.vue')
         }
       ]
     },
@@ -44,13 +58,22 @@ const router = createRouter({
 // 前置路由守卫
 router.beforeEach( async (to,from,next) => {
   
+  const reqArr = []
+
   if ( !store.state.characterInfo.length ) {
     await store.dispatch('getCharacterInfo')
   }
 
   if ( !store.state.userInfo.account ) {
-    await store.dispatch('getUserInfo')
+    reqArr.push(store.dispatch('getUserInfo'))
   }
+
+  if ( !store.state.bookClassify.length ) {
+    reqArr.push(store.dispatch('getBookClassify'))
+  }
+
+  await Promise.all(reqArr)
+
   next()
 })
 

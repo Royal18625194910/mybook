@@ -25,7 +25,13 @@
         </a-form-item>
         <!-- 分类 -->
         <a-form-item label="分类" name="classify">
-          <a-input v-model:value="addForm.classify" />
+          <a-select
+            ref="select"
+            v-model:value="addForm.classify"
+            style="width: 120px"
+          >
+            <a-select-option :value="item.title" v-for="item in store.state.bookClassify" :key="item._id">{{item.title}}</a-select-option>
+          </a-select>
         </a-form-item>
         <!-- 库存 -->
         <a-form-item label="库存" name="count">
@@ -41,11 +47,13 @@ import { defineComponent,reactive,ref,onMounted } from 'vue'
 import {book} from '@/service'
 import { result } from '@/utils/result.js'
 import { message } from 'ant-design-vue';
+import { useStore } from 'vuex';
 export default defineComponent({
   props: {
     show:Boolean
   },
   setup (props,context) {
+    const store = useStore()
     const formRef = ref(null)
     // 表单数据
     const addForm = reactive({
@@ -56,6 +64,7 @@ export default defineComponent({
       classify: '',// 分类 
       count: 0, // 库存
     })
+    addForm.classify = store.state.bookClassify[0].title
 
     // 点击提交
     const submit = async () => {
@@ -77,14 +86,13 @@ export default defineComponent({
       context.emit('update:show',false)
     }
 
-   
-    
     return {
       formRef,
       addForm,
       submit,
       props,
       close,
+      store
     }
   }
 })

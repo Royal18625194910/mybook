@@ -38,7 +38,8 @@
           </div>
 
           <div class="item">
-            <a href="javascript:;" @click="forgetPassword">忘记密码</a>
+            <a-anchor-link href="javascript:;" title="忘记密码" @click="forgetPassword"></a-anchor-link>
+            <!-- <a href="javascript:;" @click="forgetPassword">忘记密码</a> -->
           </div>
 
           <div class="item">
@@ -109,7 +110,7 @@
   </div>
 </template>
 
-<script src="./index"></script>
+<script src="./index.jsx"></script>
 
 <style lang="scss" scpoed>
   @import './index.scss';

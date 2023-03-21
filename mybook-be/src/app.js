@@ -11,8 +11,8 @@ connect().then(() => {
   app.use(koaBody())
   app.use(cors())  // 跨域处理
   
-  app.use(catchTokenError)  
-  koaJwtMiddleWare(app)
+  // app.use(catchTokenError)  
+  // koaJwtMiddleWare(app)
 
   app.use(logMiddleware)
   

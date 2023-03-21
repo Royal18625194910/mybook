@@ -25,7 +25,14 @@
         </a-form-item>
         <!-- 分类 -->
         <a-form-item label="分类" name="classify">
-          <a-input v-model:value="editForm.classify" />
+          <!-- <a-input v-model:value="editForm.classify" /> -->
+          <a-select
+            ref="select"
+            v-model:value="editForm.classify"
+            style="width: 120px"
+          >
+            <a-select-option :value="item.title" v-for="item in store.state.bookClassify" :key="item._id">{{item.title}}</a-select-option>
+          </a-select>
         </a-form-item>
       </a-form>
     </a-modal>
@@ -38,12 +45,14 @@ import moment from 'moment'
 import { book } from '@/service'
 import { result } from '@/utils/result'
 import { message } from 'ant-design-vue'
+import { useStore } from 'vuex'
 export default defineComponent({
   props: {
     show:Boolean,
     book:Object
   },
   setup (props,context) {
+    const store = useStore()
     const formRef = ref(null)
     // 表单数据
     const editForm = reactive({
@@ -88,7 +97,8 @@ export default defineComponent({
       editForm,
       props,
       close,
-      submit
+      submit,
+      store
     }
   }
 })

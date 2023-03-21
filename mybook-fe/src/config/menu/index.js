@@ -13,5 +13,26 @@ export default [
     title: '操作日志',
     url: '/log',
     onlyAdmin: true
+  },
+  {
+    title: '杂项',
+    onlyAdmin: false,
+    children: [
+      {
+        title: '书籍分类管理',
+        url: '/book-classify',
+        onlyAdmin: true
+      },
+      {
+        title: '重置密码列表',
+        url: '/reset/password',
+        onlyAdmin: true
+      },
+      {
+        title: '邀请码列表',
+        url: '/invite',
+        onlyAdmin: true
+      },
+    ]
   }
 ]

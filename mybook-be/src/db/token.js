@@ -5,8 +5,8 @@ const koaJwt = require('koa-jwt')
 // 获取token
 const getToken = (ctx) => {
   let { authorization } = ctx.header
-  console.log('999',authorization);
-  return authorization.replace('Bearer ','').replace('bearer ','').replace('Bearer','')
+  console.log('ctx.header',ctx.header);
+  return authorization.replace('Bearer ','').replace('bearer ','')
 }
 
 // 生成token

@@ -4,6 +4,7 @@ const mongoose = require('mongoose')
 const { getBody } = require('../../db/helper')
 const config = require('../../project.config')
 const { verify,getToken } = require('../../db/token')
+const { loadExcel,getFirstSheet } = require('../../db/helper')
 // User
 const User = mongoose.model('User')
 const Character = mongoose.model('Character')
@@ -173,12 +174,66 @@ router.post('/update/character', async ctx => {
  */
 router.get('/info',async ctx => {
   const token = getToken(ctx)
+  
   const res = await verify(token) 
+  console.log('/info,,ctx',ctx);
   ctx.body = {
     code: 1,
     data:res,
     msg: '获取成功'
   }
 })
+
+router.post('/addMany', async (ctx) => {
+  const {
+    key = '',
+  } = ctx.request.body;
+
+  const path = `${config.UPLOAD_DIR}/${key}`;
+
+  const excel = loadExcel(path);
+
+  const sheet = getFirstSheet(excel);
+
+  console.log(sheet);
+  
+
+  const character = await Character.find().exec();
+
+
+  const member = character.find((item) => (item.name === 'member'));
+
+  const arr = [];
+  for (let i = 0; i < sheet.length; i++) {
+    let record = sheet[i];
+
+    const [account, password = config.DEFAULT_PASSWORD] = record;
+
+    const one = await User.findOne({
+      account,
+    })
+
+    if (one) {
+      continue;
+    }
+
+    arr.push({
+      account,
+      password,
+      character: member._id,
+    });
+  }
+
+  await User.insertMany(arr);
+
+  ctx.body = {
+    code: 1,
+    msg: '添加成功',
+    data: {
+      addCount: arr.length,
+    },
+  };
+});
+
 
 module.exports = router

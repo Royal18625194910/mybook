@@ -93,9 +93,23 @@ const logMiddleware = async (ctx,next) => {
   await log.save()
 }
 
+const xlsx = require('node-xlsx');
+
+// 加载excel
+const loadExcel = (path) => {
+  return xlsx.parse(path);
+};
+
+// 获取第一个sheet
+const getFirstSheet = (sheets) => {
+  return sheets[0].data;
+};
+
 module.exports = {
   getMeta,
   getBody,
   preSave,
-  logMiddleware
+  logMiddleware,
+  loadExcel,
+  getFirstSheet
 }

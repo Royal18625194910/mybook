@@ -1,10 +1,11 @@
-import axios from 'axios'
+import { get,post,del} from '@/utils/request'
+
 
 /**
  * 获取邀请码列表
  */
 export const list = (page,size) => {
-  return axios.get('http://localhost:3000/invite/list',{
+  return get('/invite/list',{
    params: {
     page,
     size
@@ -16,7 +17,7 @@ export const list = (page,size) => {
  * 添加一个邀请码
  */
 export const add = (count) => {
-  return axios.post('http://localhost:3000/invite/add',{
+  return post('/invite/add',{
    count
   })
 }
@@ -24,5 +25,5 @@ export const add = (count) => {
  * 删除某个邀请码
  */
 export const remove = (id) => {
-  return axios.delete(`http://localhost:3000/invite/${id}`)
+  return del(`/invite/${id}`)
 }

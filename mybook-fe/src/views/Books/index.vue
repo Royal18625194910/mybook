@@ -2,12 +2,8 @@
   <div>
     <!-- <a-card :title="$$.PAGE_META.CLASSIFY.PAGE_TITLE"> -->
     <a-card>
+      <h2 v-if="!simple">书籍管理</h2>
       <div>
-        <!-- <a-input
-          v-model:value="title"
-          :placeholder="$$.PAGE_META.CLASSIFY.ADD_FORM_INPUT_PLACEHOLDER"
-          style="width: 200px;"
-        /> -->
         <a-input-search
           v-model:value="keyword"
           placeholder="根据书名搜索"
@@ -25,10 +21,11 @@
         <!-- 表格 -->
         <a-table
           bordered
-          :pagination="pagination"
+          :pagination="!simple && pagination"
           :columns="columns" 
           :dataSource="list"
           @change="setPage"
+          :scroll="{ x: 'max-content'}"
         >
           <template #bodyCell="{ record,  column}">
             <!-- 出版日期格式化 -->
@@ -36,7 +33,7 @@
               {{formatTimestamp(record.publishDate)}}
             </template>
             <!-- 操作 -->
-            <template v-if="column.dataIndex === 'actions'">
+            <template v-if="column.dataIndex === 'actions' && !simple">
               <a href="javascript:;" @click="toDetail(record)">详情</a>
               <span>&nbsp;&nbsp;&nbsp;</span>
               <a href="javascript:;" @click="update(record)">编辑</a>
@@ -74,7 +71,10 @@ export default defineComponent({
     AddOne,
     Update
   },
-  setup () {
+  props: {
+    simple: Boolean
+  },
+  setup (props) {
     const router = useRouter()
     // 表格列名
     const columns = [
@@ -102,11 +102,15 @@ export default defineComponent({
         title: '库存',
         dataIndex: 'count',
       },
-      {
+      
+    ];
+
+    if ( !props.simple ) {
+      columns.push({
         title: '操作',
         dataIndex: 'actions',
-      },
-    ];
+      })
+    }
     // 表格数据
     const list = ref([]);
     const show = ref(false)
@@ -250,7 +254,8 @@ export default defineComponent({
         getList,
         bookClassifyList,
         getbookClassify,
-        bookClassifyLoading
+        bookClassifyLoading,
+        simple: props.simple
       }
     }
   })

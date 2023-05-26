@@ -8,11 +8,16 @@ const { middleware:koaJwtMiddleWare,catchTokenError } = require('./db/token')
 const { logMiddleware } = require('./db/helper')
 
 connect().then(() => {
-  app.use(koaBody())
   app.use(cors())  // 跨域处理
+  app.use(koaBody({
+    multipart: true,
+    formidable: {
+      maxFileSize: 200 * 1024 * 1024
+    }
+  }))
   
-  // app.use(catchTokenError)  
-  // koaJwtMiddleWare(app)
+  app.use(catchTokenError)  
+  koaJwtMiddleWare(app)
 
   app.use(logMiddleware)
   

@@ -1,9 +1,10 @@
-import axios from 'axios'
+import { get,post,del} from '@/utils/request'
+
 /**
  * 获取重置密码用户列表
  */
 export const list = (page, size) => {
-  return axios.get('http://localhost:3000/forget-password/list',
+  return get('/forget-password/list',
     {
       params: {
         page, 
@@ -16,7 +17,7 @@ export const list = (page, size) => {
  * 添加重置密码用户
  */
 export const add = (account) => {
-  return axios.post('http://localhost:3000/forget-password/add',{
+  return post('/forget-password/add',{
     account
   })
 }
@@ -25,7 +26,7 @@ export const add = (account) => {
  * // 1 待处理  2 已重置  3 已忽略
  */
 export const updateStatus = (id,status) => {
-  return axios.post('http://localhost:3000/forget-password/update/status',{
+  return post('/forget-password/update/status',{
     id,
     status
   })

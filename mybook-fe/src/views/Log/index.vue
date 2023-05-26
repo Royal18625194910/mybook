@@ -3,14 +3,17 @@
     <a-spin :spinning="loading">
     <a-card
     >
-        <h2>操作日志</h2>
-        <a-divider />
+        <div v-if="!simple">
+          <h2>操作日志</h2>
+          <a-divider />
+        </div>
+        <h2>{{ simple ? '最近操作记录' : '' }}</h2>
       <div>
         <a-table
           bordered
           :columns="columns"
           :data-source="list"
-          :pagination="pagination"
+          :pagination="!simple && pagination"
           @change="setPage"
         >
           <template #bodyCell="{ column,record }">
@@ -27,7 +30,7 @@
               {{ formatTimestamp(record.meta.createAt) }}
             </template>
              <!-- 操作 -->
-             <template v-if="column.dataIndex === 'actions'">
+             <template v-if="column.dataIndex === 'actions' && !simple">
               <a href="javascript:;" @click="remove(record._id)">删除</a>
             </template>
           </template>
@@ -45,7 +48,14 @@ import { result } from '@/utils/result'
 import { getLogInfoByPath } from '@/utils/log'
 import { formatTimestamp } from '@/utils/formatTimestamp'
 
-const columns = [
+
+
+export default defineComponent({
+  props: {
+    simple: Boolean
+  },
+  setup (props) {
+    const columns = [
   {
     title: '用户名',
     dataIndex: 'user.account'
@@ -58,16 +68,16 @@ const columns = [
     title: '记录时间',
     dataIndex: 'createdAt'
   },
-  {
-    title: '操作',
-    dataIndex: 'actions'
-  }
+  
 ]
 
-export default defineComponent({
-  setup () {
+if ( !props.simple ) {
+  columns.push({
+    title: '操作',
+    dataIndex: 'actions'
+})
+}
     // 当前页码
-
     const curPage = ref(1)  
     // 每页数量
     const size = ref(10)
@@ -124,7 +134,8 @@ export default defineComponent({
       setPage,
       loading,
       formatTimestamp,
-      remove
+      remove,
+      simple: props.simple
     }
   }
 })

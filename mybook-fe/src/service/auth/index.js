@@ -1,8 +1,4 @@
-import axios from 'axios'
-import { getToken } from '@/utils/token'
-
-axios.defaults.headers['Authorization'] = `Bearer ${getToken()}`
-
+import { get,post,del} from '@/utils/request'
 
 /**
  * 注册api
@@ -10,7 +6,7 @@ axios.defaults.headers['Authorization'] = `Bearer ${getToken()}`
  * @returns 
  */
 export const register = ({account,password,inviteCode}) => {
-  return axios.post('http://localhost:3000/auth/register',{
+  return post('/auth/register',{
     account,
     password,
     inviteCode
@@ -23,7 +19,7 @@ export const register = ({account,password,inviteCode}) => {
  * @returns 
  */
 export const login = ({account,password}) => {
-  return axios.post('http://localhost:3000/auth/login',{
+  return post('/auth/login',{
     account,
     password,
   })

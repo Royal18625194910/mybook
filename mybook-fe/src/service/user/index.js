@@ -1,9 +1,10 @@
-import axios from 'axios'
+import { get,post,del} from '@/utils/request'
+
 /**
  * 获取日志数据 list
  */
 export const list = ({page = 1, size = 10,keyword = ''}) => {
-  return axios.get('http://localhost:3000/user/list',
+  return get('/user/list',
     {
       params: {
         page,
@@ -17,13 +18,13 @@ export const list = ({page = 1, size = 10,keyword = ''}) => {
  * 删除某个用户
  */
 export const remove = (id) => {
-  return axios.delete(`http://localhost:3000/user/${id}`)
+  return del(`/user/${id}`)
 }
 /**
  * 添加用户
  */
 export const add = ({account,password,character}) => {
-  return axios.post('http://localhost:3000/user/add',{
+  return post('/user/add',{
     account,
     password,
     character
@@ -33,7 +34,7 @@ export const add = ({account,password,character}) => {
  * 重置密码
  */
 export const resetPassword = (id) => {
-  return axios.post('http://localhost:3000/user/reset/password',{
+  return post('/user/reset/password',{
     id
   })
 }
@@ -41,7 +42,7 @@ export const resetPassword = (id) => {
  * 编辑用户角色
  */
 export const editCharacter = (characterId,userId) => {
-  return axios.post('http://localhost:3000/user/update/character',{
+  return post('/user/update/character',{
     character: characterId,
     userId
   })
@@ -50,5 +51,11 @@ export const editCharacter = (characterId,userId) => {
  * 获取token
  */
 export const info = () => {
-  return axios.get('http://localhost:3000/user/info')
+  return get('/user/info')
 }
+
+export const addMany = (key) => {
+  return post('/user/addMany', {
+    key,
+  });
+};

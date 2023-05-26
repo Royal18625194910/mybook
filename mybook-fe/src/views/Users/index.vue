@@ -18,6 +18,8 @@
           &nbsp;
           <a-upload
             action="http://localhost:3000/upload/file"
+            @change="onUploadChange"
+            :headers="headers"
           >
           <!-- :headers="headers" -->
             <a-button type="primary">上传 Excel 添加</a-button>
@@ -85,6 +87,7 @@ import store from '@/store'
 import { EditOutlined } from '@ant-design/icons-vue';
 import { formatTimestamp } from '@/utils/formatTimestamp.js'
 import { getCharacterInfoById } from '@/utils/character'
+import { getHeaders } from '@/utils/request'
 
 const columns = [
   {
@@ -197,6 +200,23 @@ export default defineComponent({
       getUser()
     })
 
+    // 上传文件
+    const onUploadChange = ({file}) => {
+      if (file.status === 'done') {
+        result({data:file.response})
+          .success(async ({data}) => {
+            console.log(data);
+            const res = await user.addMany(data);
+
+            result(res)
+              .success(({ data: { addCount } }) => {
+                message.success(`成功添加 ${addCount} 位用户`);
+                getUser();
+              });
+          });
+      }
+    };
+
     return {
       onMounted,
       curPage,
@@ -217,7 +237,9 @@ export default defineComponent({
       characterInfo:store.state.characterInfo,
       editForm,
       onEdit,
-      updateCharacter
+      updateCharacter,
+      onUploadChange,
+      headers: getHeaders()
     }
   }
 })

@@ -14,10 +14,10 @@ const router = new Router({
 /**
  * 修改用户密码
  */
-router.get('/update/password',async ctx => {
+router.post('/update/password',async ctx => {
   const { password,oldPassword } = getBody(ctx)
-  const { _id } =  verify(getToken(ctx))
-  const user = await User.findOne({_id}).exec()
+  const {id} = await verify(getToken(ctx))
+  const user = await User.findOne({_id:id}).exec()
 
   if ( !user ) {
     ctx.body = {

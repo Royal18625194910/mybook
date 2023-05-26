@@ -1,4 +1,5 @@
-import axios from 'axios'
+import { get,post,del} from '@/utils/request'
+
 
 /**
  * 获取日志列表数据  /log/list
@@ -7,7 +8,7 @@ import axios from 'axios'
  * @returns 
  */
 export const list = ( page, size ) => {
-  return axios.get('http://localhost:3000/log/list', {
+  return get('/log/list', {
     params: {
       page,
       size
@@ -19,7 +20,7 @@ export const list = ( page, size ) => {
  * 删除某条日志记录
  */
 export const remove = id => {
-  return axios.post('http://localhost:3000/log/delete',{
+  return post('/log/delete',{
     id
   })
 }
